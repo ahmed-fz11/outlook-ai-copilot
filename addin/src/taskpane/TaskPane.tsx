@@ -5,7 +5,24 @@ import { CustomerCard } from "./CustomerCard";
 import { DraftReply } from "./DraftReply";
 import { ActionButtons } from "./ActionButtons";
 import { generateDraftMock } from "../services/api";
-import type { DraftResponse } from "../types";
+import type { DraftResponse, EmailContext } from "../types";
+
+// Local fallback used when the backend is not yet running.
+// Produces a realistic-looking draft entirely in the browser.
+function localMockDraft(email: EmailContext): DraftResponse {
+  return {
+    summary: `${email.senderEmail} sent an email with the subject "${email.subject}". This is a locally generated preview — the backend is not connected yet.`,
+    draft_reply:
+      `Hi,\n\nThank you for your email regarding "${email.subject}".\n\n` +
+      `I have reviewed your message and will follow up with the relevant details shortly.\n\n` +
+      `Best regards`,
+    missing_information: [
+      "Backend not connected yet — this is a local preview",
+      "Connect the FastAPI backend in Milestone 3 for real AI drafts",
+    ],
+    confidence_notes: "Local preview mode",
+  };
+}
 
 export function TaskPane() {
   const { email, loading: emailLoading, error: emailError } = useEmailContext();
@@ -20,8 +37,10 @@ export function TaskPane() {
     try {
       const result = await generateDraftMock(email);
       setDraft(result);
-    } catch (e: any) {
-      setError(e.message ?? "Failed to generate draft");
+    } catch {
+      // Backend not running yet — fall back to local preview
+      await new Promise((r) => setTimeout(r, 600)); // brief delay so it feels real
+      setDraft(localMockDraft(email));
     } finally {
       setGenerating(false);
     }
