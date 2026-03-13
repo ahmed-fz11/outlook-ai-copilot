@@ -1,15 +1,26 @@
 """OpenAI integration for email summarization and draft generation."""
 
-from openai import OpenAI
-
 from app.core.config import settings
 from app.prompts.templates import build_system_prompt, build_user_prompt
 
 
 class AIService:
     def __init__(self) -> None:
-        self.client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        # Client is created lazily on first use so the server starts fine
+        # even when OPENAI_API_KEY is not yet configured (Milestones 1-5).
+        self._client = None
         self.model = settings.OPENAI_MODEL
+
+    @property
+    def client(self):
+        if self._client is None:
+            from openai import OpenAI
+            if not settings.OPENAI_API_KEY:
+                raise RuntimeError(
+                    "OPENAI_API_KEY is not set. Add it to backend/.env before using AI features."
+                )
+            self._client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        return self._client
 
     def generate_draft(
         self,

@@ -1,15 +1,14 @@
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class GenerateDraftRequest(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     email: "EmailContext"
     tone: str = "professional"
-
-    class Config:
-        from_attributes = True
 
 
 class GenerateDraftResponse(BaseModel):
@@ -23,6 +22,8 @@ class GenerateDraftResponse(BaseModel):
 
 
 class SavedDraft(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
     id: uuid.UUID
     generated_draft: str | None
     model_name: str
@@ -30,9 +31,6 @@ class SavedDraft(BaseModel):
     token_output: int
     estimated_cost: float
     created_at: datetime
-
-    class Config:
-        from_attributes = True
 
 
 from app.schemas.email import EmailContext  # noqa: E402
