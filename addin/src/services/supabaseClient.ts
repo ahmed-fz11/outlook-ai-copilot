@@ -3,8 +3,13 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL ?? "";
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY ?? "";
 
-// Guard: createClient throws if both values are empty (e.g. during Milestone 1
-// before Supabase is configured). A dummy placeholder prevents the crash.
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn(
+    "[supabase] VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is not set in addin/.env. " +
+    "Auth will not work until these are configured."
+  );
+}
+
 export const supabase = createClient(
   supabaseUrl || "https://placeholder.supabase.co",
   supabaseAnonKey || "placeholder-key"

@@ -23,7 +23,7 @@ function localMockDraft(email: EmailContext): DraftResponse {
   };
 }
 
-export function TaskPane() {
+export function TaskPane({ onSignOut }: { onSignOut: () => void }) {
   const { email, loading: emailLoading, error: emailError } = useEmailContext();
   const [draft, setDraft] = useState<DraftResponse | null>(null);
   const [generating, setGenerating] = useState(false);
@@ -46,7 +46,7 @@ export function TaskPane() {
   if (emailLoading) {
     return (
       <div className="taskpane-root">
-        <Header />
+        <Header onSignOut={onSignOut} />
         <div className="state-screen">
           <div className="state-icon loading">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -66,7 +66,7 @@ export function TaskPane() {
   if (emailError) {
     return (
       <div className="taskpane-root">
-        <Header />
+        <Header onSignOut={onSignOut} />
         <div className="state-screen">
           <div className="state-icon error">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -86,7 +86,7 @@ export function TaskPane() {
   if (!email) {
     return (
       <div className="taskpane-root">
-        <Header />
+        <Header onSignOut={onSignOut} />
         <div className="state-screen">
           <div className="state-icon empty">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -104,7 +104,7 @@ export function TaskPane() {
   // ── Main view ──────────────────────────────────────────────
   return (
     <div className="taskpane-root">
-      <Header />
+      <Header onSignOut={onSignOut} />
 
       <div className="container">
 
@@ -177,7 +177,7 @@ export function TaskPane() {
   );
 }
 
-function Header() {
+function Header({ onSignOut }: { onSignOut: () => void }) {
   return (
     <header className="taskpane-header">
       <div className="header-icon">
@@ -189,6 +189,13 @@ function Header() {
         <h1>Email Copilot</h1>
         <p>AI-powered reply assistant</p>
       </div>
+      <button className="header-logout-btn" onClick={onSignOut} title="Sign out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+      </button>
     </header>
   );
 }
