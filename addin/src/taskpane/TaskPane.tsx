@@ -4,8 +4,11 @@ import { EmailSummary } from "./EmailSummary";
 import { CustomerCard } from "./CustomerCard";
 import { DraftReply } from "./DraftReply";
 import { ActionButtons } from "./ActionButtons";
+import { HistoryPanel } from "./HistoryPanel";
 import { generateDraft, generateDraftMock } from "../services/api";
 import type { DraftResponse, EmailContext } from "../types";
+
+type ActiveTab = "generate" | "history";
 
 function localMockDraft(email: EmailContext): DraftResponse {
   return {
@@ -27,6 +30,7 @@ export function TaskPane({ onSignOut }: { onSignOut: () => void }) {
   const { email, loading: emailLoading, error: emailError } = useEmailContext();
   const [draft, setDraft] = useState<DraftResponse | null>(null);
   const [generating, setGenerating] = useState(false);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("generate");
 
   const handleGenerate = async () => {
     if (!email) return;
@@ -115,18 +119,18 @@ export function TaskPane({ onSignOut }: { onSignOut: () => void }) {
 
       <div className="container">
 
-        {/* Email info + body preview (Milestone 2) */}
+        {/* Email info + body preview */}
         <div className="section">
           <EmailSummary
             sender={email.senderEmail}
             subject={email.subject}
             body={email.body}
-            summary={draft?.summary}
+            summary={activeTab === "generate" ? draft?.summary : undefined}
           />
         </div>
 
         {/* Customer card — shown when backend returns a match */}
-        {draft?.customer_name && (
+        {activeTab === "generate" && draft?.customer_name && (
           <div className="section">
             <div className="section-label">Matched Customer</div>
             <CustomerCard
@@ -136,47 +140,86 @@ export function TaskPane({ onSignOut }: { onSignOut: () => void }) {
           </div>
         )}
 
-        {/* Generate button */}
-        {!draft && (
-          <div className="generate-section">
-            <button
-              className="btn-generate"
-              onClick={handleGenerate}
-              disabled={generating}
-            >
-              {generating ? (
-                <>
-                  <div className="spinner" />
-                  Generating draft…
-                </>
-              ) : (
-                <>
-                  {/* wand/sparkle icon */}
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 3l1.88 5.76a1 1 0 0 0 .95.69h6.06l-4.9 3.56a1 1 0 0 0-.36 1.12L17.5 20l-4.9-3.56a1 1 0 0 0-1.18 0L6.5 20l1.87-5.87a1 1 0 0 0-.36-1.12L3.11 9.45h6.06a1 1 0 0 0 .95-.69L12 3z"/>
-                  </svg>
-                  Generate Draft
-                </>
-              )}
-            </button>
-          </div>
+        {/* Tab switcher */}
+        <div className="tab-bar">
+          <button
+            className={`tab-btn ${activeTab === "generate" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("generate")}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 3l1.88 5.76a1 1 0 0 0 .95.69h6.06l-4.9 3.56a1 1 0 0 0-.36 1.12L17.5 20l-4.9-3.56a1 1 0 0 0-1.18 0L6.5 20l1.87-5.87a1 1 0 0 0-.36-1.12L3.11 9.45h6.06a1 1 0 0 0 .95-.69L12 3z"/>
+            </svg>
+            Generate
+          </button>
+          <button
+            className={`tab-btn ${activeTab === "history" ? "tab-active" : ""}`}
+            onClick={() => setActiveTab("history")}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            History
+          </button>
+        </div>
+
+        {/* ── Generate tab ── */}
+        {activeTab === "generate" && (
+          <>
+            {!draft && (
+              <div className="generate-section">
+                <button
+                  className="btn-generate"
+                  onClick={handleGenerate}
+                  disabled={generating}
+                >
+                  {generating ? (
+                    <>
+                      <div className="spinner" />
+                      Generating draft…
+                    </>
+                  ) : (
+                    <>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M12 3l1.88 5.76a1 1 0 0 0 .95.69h6.06l-4.9 3.56a1 1 0 0 0-.36 1.12L17.5 20l-4.9-3.56a1 1 0 0 0-1.18 0L6.5 20l1.87-5.87a1 1 0 0 0-.36-1.12L3.11 9.45h6.06a1 1 0 0 0 .95-.69L12 3z"/>
+                      </svg>
+                      Generate Draft
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
+
+            {draft && (
+              <>
+                <div className="section">
+                  <DraftReply
+                    draftText={draft.draft_reply}
+                    missingInfo={draft.missing_information}
+                  />
+                </div>
+                <ActionButtons
+                  draftText={draft.draft_reply}
+                  onRegenerate={handleGenerate}
+                  generating={generating}
+                />
+              </>
+            )}
+          </>
         )}
 
-        {/* Draft reply + actions */}
-        {draft && (
-          <>
-            <div className="section">
-              <DraftReply
-                draftText={draft.draft_reply}
-                missingInfo={draft.missing_information}
-              />
-            </div>
-            <ActionButtons
-              draftText={draft.draft_reply}
-              onRegenerate={handleGenerate}
-              generating={generating}
+        {/* ── History tab ── */}
+        {activeTab === "history" && (
+          <div className="section">
+            <div className="section-label">Previous Drafts from this Sender</div>
+            <HistoryPanel
+              senderEmail={email.senderEmail}
+              onSelect={(selected) => {
+                setDraft(selected);
+                setActiveTab("generate");
+              }}
             />
-          </>
+          </div>
         )}
 
       </div>

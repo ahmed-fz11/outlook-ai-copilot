@@ -26,6 +26,8 @@ class SavedDraft(BaseModel):
 
     id: uuid.UUID
     generated_draft: str | None
+    missing_info_json: list[str] | None = None
+    subject: str | None = None
     model_name: str
     token_input: int
     token_output: int

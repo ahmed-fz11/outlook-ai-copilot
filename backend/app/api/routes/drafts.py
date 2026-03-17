@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 
 from app.core.database import get_db
 from app.api.deps import get_current_user
-from app.schemas.draft import GenerateDraftRequest, GenerateDraftResponse
+from app.models.draft import Draft
+from app.schemas.draft import GenerateDraftRequest, GenerateDraftResponse, SavedDraft
 from app.services.draft_service import draft_service
 
 router = APIRouter()
@@ -33,6 +34,33 @@ async def generate_draft(
     )
 
     return GenerateDraftResponse(**result)
+
+
+@router.get("/history", response_model=list[SavedDraft])
+async def draft_history(
+    limit: int = 20,
+    sender_email: str | None = None,
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Return all drafts for the current user filtered by sender, across all their emails."""
+    from app.models.email_event import EmailEvent
+    user_id = current_user.get("user_id")
+    rows = (
+        db.query(Draft, EmailEvent.subject)
+        .join(EmailEvent, Draft.email_event_id == EmailEvent.id)
+        .filter(Draft.user_id == user_id)
+    )
+    if sender_email:
+        rows = rows.filter(EmailEvent.sender_email == sender_email)
+    rows = rows.order_by(Draft.created_at.desc()).limit(limit).all()
+
+    result = []
+    for draft, subject in rows:
+        d = SavedDraft.model_validate(draft)
+        d.subject = subject
+        result.append(d)
+    return result
 
 
 @router.post("/generate-mock", response_model=GenerateDraftResponse)

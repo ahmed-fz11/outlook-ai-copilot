@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { supabase } from "../services/supabaseClient";
 import type { Session } from "@supabase/supabase-js";
 
@@ -17,13 +17,22 @@ async function provisionUser(accessToken: string) {
 export function useAuth() {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  // Track the last token we provisioned so we only call /me once per token
+  const provisionedToken = useRef<string | null>(null);
+
+  const maybeProvision = (token: string) => {
+    if (token && token !== provisionedToken.current) {
+      provisionedToken.current = token;
+      provisionUser(token);
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session?.access_token) {
         localStorage.setItem("sb-access-token", session.access_token);
-        provisionUser(session.access_token);
+        maybeProvision(session.access_token);
       }
       setLoading(false);
     });
@@ -34,9 +43,10 @@ export function useAuth() {
       setSession(session);
       if (session?.access_token) {
         localStorage.setItem("sb-access-token", session.access_token);
-        provisionUser(session.access_token);
+        maybeProvision(session.access_token);
       } else {
         localStorage.removeItem("sb-access-token");
+        provisionedToken.current = null;
       }
     });
 
@@ -46,6 +56,7 @@ export function useAuth() {
   const signOut = async () => {
     await supabase.auth.signOut();
     setSession(null);
+    provisionedToken.current = null;
     localStorage.removeItem("sb-access-token");
   };
 

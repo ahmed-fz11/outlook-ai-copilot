@@ -44,6 +44,23 @@ export async function generateDraft(
   });
 }
 
+export interface SavedDraft {
+  id: string;
+  generated_draft: string | null;
+  missing_info_json: string[] | null;
+  subject: string | null;
+  model_name: string;
+  token_input: number;
+  token_output: number;
+  estimated_cost: number;
+  created_at: string;
+}
+
+export async function fetchDraftHistory(senderEmail: string): Promise<SavedDraft[]> {
+  const params = new URLSearchParams({ sender_email: senderEmail, limit: "20" });
+  return request<SavedDraft[]>(`/api/drafts/history?${params}`);
+}
+
 export async function generateDraftMock(
   email: EmailContext,
   tone: string = "professional"
