@@ -4,7 +4,7 @@ import { EmailSummary } from "./EmailSummary";
 import { CustomerCard } from "./CustomerCard";
 import { DraftReply } from "./DraftReply";
 import { ActionButtons } from "./ActionButtons";
-import { generateDraftMock } from "../services/api";
+import { generateDraft, generateDraftMock } from "../services/api";
 import type { DraftResponse, EmailContext } from "../types";
 
 function localMockDraft(email: EmailContext): DraftResponse {
@@ -32,11 +32,18 @@ export function TaskPane({ onSignOut }: { onSignOut: () => void }) {
     if (!email) return;
     setGenerating(true);
     try {
-      const result = await generateDraftMock(email);
+      // Try real authenticated endpoint first
+      const result = await generateDraft(email);
       setDraft(result);
     } catch {
-      await new Promise((r) => setTimeout(r, 700));
-      setDraft(localMockDraft(email));
+      // Fall back to mock if backend unreachable or not yet configured
+      try {
+        const result = await generateDraftMock(email);
+        setDraft(result);
+      } catch {
+        await new Promise((r) => setTimeout(r, 700));
+        setDraft(localMockDraft(email));
+      }
     } finally {
       setGenerating(false);
     }

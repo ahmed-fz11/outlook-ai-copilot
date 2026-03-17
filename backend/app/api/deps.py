@@ -14,14 +14,16 @@ async def get_current_user(
 ) -> dict:
     """Resolve Supabase JWT to application user context (user_id + tenant_id).
 
+    Auto-provisions the user + a personal tenant on first login.
     Returns a dict with 'sub', 'email', 'user_id', and 'tenant_id'.
-    In early milestones before auth is wired, routes can skip this dependency.
     """
     supabase_uid = token_payload["sub"]
-    app_user = auth_service.get_app_user(db, supabase_uid)
+    email = token_payload.get("email", "")
+    app_user = auth_service.provision_user(db, supabase_uid, email)
 
     return {
         **token_payload,
-        "user_id": app_user.id if app_user else None,
-        "tenant_id": app_user.tenant_id if app_user else None,
+        "user_id": app_user.id,
+        "tenant_id": app_user.tenant_id,
+        "role": app_user.role,
     }

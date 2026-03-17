@@ -44,16 +44,19 @@ outlook-ai-copilot-saas/
 
 ## MVP Milestones
 
-1. **Add-in shell** — Sideload manifest, verify task pane loads in Outlook
-2. **Read email** — Fetch subject, sender, body via Office.js
-3. **Backend API** — FastAPI with health check and mock draft endpoint
-4. **Auth** — Supabase magic link login
-5. **Data model** — Tenant/user/customer tables with seed data
-6. **AI integration** — OpenAI summary + draft generation
-7. **Logging** — Save drafts and interaction history
-8. **UX polish** — Copy, regenerate, save draft buttons
-9. **Deploy** — Backend on Render, connected to Supabase
-10. **SaaS polish** — Branding, rate limits, settings
+| # | Milestone | Status |
+|---|-----------|--------|
+| 1 | **Add-in shell** — Sideload manifest, verify task pane loads in Outlook | ✅ Done |
+| 2 | **Read email** — Fetch subject, sender, body via Office.js | ✅ Done |
+| 3 | **Backend API** — FastAPI with health check and mock draft endpoint | ✅ Done |
+| 4 | **Auth** — Supabase OTP login, JWT verification, user auto-provision | ✅ Done |
+| 5 | **Data model** — Tenant/user/customer tables with seed data | ✅ Done |
+| 6 | **AI integration** — OpenAI summary + draft generation (real backend call) | 🔲 Next |
+| 7 | **Logging** — Save email events and draft history to database | 🔲 Upcoming |
+| 8 | **UX polish** — Copy, regenerate, tone selector, loading states | 🔲 Upcoming |
+| 9 | **Microsoft SSO** — Replace Supabase OTP with Office.js `getAccessToken()` for seamless login using the same Outlook account (no separate login screen); requires Azure AD app registration | 🔲 Before deploy |
+| 10 | **Deploy** — Backend on Render, production Supabase, HTTPS manifest | 🔲 Before deploy |
+| 11 | **SaaS polish** — Branding, per-tenant rate limits, settings page, usage dashboard | 🔲 Post-deploy |
 
 ## Local Development
 

@@ -37,15 +37,32 @@ class DraftService:
             }
             tone = customer.preferred_tone or tone
 
-        # 2. Call AI
-        ai_result = ai_service.generate_draft(
-            email_text=email.body,
-            subject=email.subject,
-            sender_email=email.sender_email,
-            customer_info=customer_info,
-            thread_summary=email.thread_summary,
-            tone=tone,
-        )
+        # 2. Call AI (fall back to mock draft if OpenAI is not configured)
+        try:
+            ai_result = ai_service.generate_draft(
+                email_text=email.body,
+                subject=email.subject,
+                sender_email=email.sender_email,
+                customer_info=customer_info,
+                thread_summary=email.thread_summary,
+                tone=tone,
+            )
+        except RuntimeError:
+            # OpenAI key not set yet — return a structured mock so customer
+            # card and DB logging still work
+            ai_result = {
+                "summary": f"Email from {email.sender_email} about: {email.subject}",
+                "draft_reply": (
+                    f"Hi{', ' + customer.contact_name if customer else ''},\n\n"
+                    f"Thank you for your email regarding \"{email.subject}\".\n\n"
+                    "I've reviewed your message and will follow up shortly.\n\n"
+                    "Best regards"
+                ),
+                "missing_information": ["AI key not configured — add OPENAI_API_KEY to backend/.env"],
+                "confidence_notes": "Mock draft — AI not active",
+                "token_input": 0,
+                "token_output": 0,
+            }
 
         # 3. Persist email event
         email_event = EmailEvent(
