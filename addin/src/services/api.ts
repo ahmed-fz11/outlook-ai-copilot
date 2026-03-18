@@ -56,6 +56,26 @@ export interface SavedDraft {
   created_at: string;
 }
 
+export interface CustomerInfo {
+  id: string;
+  company_name: string;
+  contact_name: string;
+  email: string;
+  segment: string;
+  preferred_tone: string;
+  account_notes: string | null;
+  status: string;
+}
+
+export async function lookupCustomer(senderEmail: string): Promise<CustomerInfo | null> {
+  try {
+    const params = new URLSearchParams({ sender_email: senderEmail });
+    return await request<CustomerInfo | null>(`/api/customers/lookup?${params}`);
+  } catch {
+    return null;
+  }
+}
+
 export async function fetchDraftHistory(senderEmail: string): Promise<SavedDraft[]> {
   const params = new URLSearchParams({ sender_email: senderEmail, limit: "20" });
   return request<SavedDraft[]>(`/api/drafts/history?${params}`);
