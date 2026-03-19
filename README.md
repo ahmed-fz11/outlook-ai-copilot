@@ -54,7 +54,7 @@ outlook-ai-copilot-saas/
 | 6 | **AI integration** — OpenAI summary + draft generation (real backend call) | 🔲 Next |
 | 7 | **Logging** — Save email events and draft history to database | ✅ Done |
 | 8 | **UX polish** — Copy, regenerate, tone selector, loading states | ✅ Done |
-| 9 | **Deploy** — Backend on Render, production Supabase, HTTPS manifest | 🔲 Before deploy |
+| 9 | **Deploy** — Backend on Render, production Supabase, HTTPS manifest | ✅ Done |
 | 10 | **SaaS polish** — Branding, per-tenant rate limits, settings page, usage dashboard | 🔲 Post-deploy |
 
 ### Why not Microsoft SSO?

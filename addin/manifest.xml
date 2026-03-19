@@ -7,15 +7,15 @@
   xsi:type="MailApp">
 
   <Id>a1b2c3d4-e5f6-7890-abcd-ef1234567890</Id>
-  <Version>0.1.1</Version>
+  <Version>1.0.0</Version>
   <ProviderName>Outlook AI Copilot</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Email Copilot" />
   <Description DefaultValue="AI-powered email copilot that summarizes emails and generates professional reply drafts." />
 
-  <IconUrl DefaultValue="https://localhost:3000/assets/icon-32.png" />
-  <HighResolutionIconUrl DefaultValue="https://localhost:3000/assets/icon-128.png" />
-  <SupportUrl DefaultValue="https://localhost:3000" />
+  <IconUrl DefaultValue="https://email-ai-assistant-ochre.vercel.app/assets/icon-32.png" />
+  <HighResolutionIconUrl DefaultValue="https://email-ai-assistant-ochre.vercel.app/assets/icon-128.png" />
+  <SupportUrl DefaultValue="https://email-ai-assistant-ochre.vercel.app" />
 
   <Hosts>
     <Host Name="Mailbox" />
@@ -31,7 +31,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://localhost:3000" />
+        <SourceLocation DefaultValue="https://email-ai-assistant-ochre.vercel.app" />
         <RequestedHeight>450</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -94,13 +94,13 @@
 
     <Resources>
       <bt:Images>
-        <bt:Image id="Icon.16x16" DefaultValue="https://localhost:3000/assets/icon-16.png" />
-        <bt:Image id="Icon.32x32" DefaultValue="https://localhost:3000/assets/icon-32.png" />
-        <bt:Image id="Icon.80x80" DefaultValue="https://localhost:3000/assets/icon-80.png" />
+        <bt:Image id="Icon.16x16" DefaultValue="https://email-ai-assistant-ochre.vercel.app/assets/icon-16.png" />
+        <bt:Image id="Icon.32x32" DefaultValue="https://email-ai-assistant-ochre.vercel.app/assets/icon-32.png" />
+        <bt:Image id="Icon.80x80" DefaultValue="https://email-ai-assistant-ochre.vercel.app/assets/icon-80.png" />
       </bt:Images>
       <bt:Urls>
-        <bt:Url id="Commands.Url" DefaultValue="https://localhost:3000" />
-        <bt:Url id="Taskpane.Url" DefaultValue="https://localhost:3000" />
+        <bt:Url id="Commands.Url" DefaultValue="https://email-ai-assistant-ochre.vercel.app" />
+        <bt:Url id="Taskpane.Url" DefaultValue="https://email-ai-assistant-ochre.vercel.app" />
       </bt:Urls>
       <bt:ShortStrings>
         <bt:String id="GroupLabel" DefaultValue="Email Copilot" />
