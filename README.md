@@ -52,11 +52,18 @@ outlook-ai-copilot-saas/
 | 4 | **Auth** — Supabase OTP login, JWT verification, user auto-provision | ✅ Done |
 | 5 | **Data model** — Tenant/user/customer tables with seed data | ✅ Done |
 | 6 | **AI integration** — OpenAI summary + draft generation (real backend call) | 🔲 Next |
-| 7 | **Logging** — Save email events and draft history to database | 🔲 Upcoming |
-| 8 | **UX polish** — Copy, regenerate, tone selector, loading states | 🔲 Upcoming |
-| 9 | **Microsoft SSO** — Replace Supabase OTP with Office.js `getAccessToken()` for seamless login using the same Outlook account (no separate login screen); requires Azure AD app registration | 🔲 Before deploy |
-| 10 | **Deploy** — Backend on Render, production Supabase, HTTPS manifest | 🔲 Before deploy |
-| 11 | **SaaS polish** — Branding, per-tenant rate limits, settings page, usage dashboard | 🔲 Post-deploy |
+| 7 | **Logging** — Save email events and draft history to database | ✅ Done |
+| 8 | **UX polish** — Copy, regenerate, tone selector, loading states | ✅ Done |
+| 9 | **Deploy** — Backend on Render, production Supabase, HTTPS manifest | 🔲 Before deploy |
+| 10 | **SaaS polish** — Branding, per-tenant rate limits, settings page, usage dashboard | 🔲 Post-deploy |
+
+### Why not Microsoft SSO?
+
+We evaluated Office.js `getAccessToken()` to replace Supabase OTP with seamless single sign-on using the user's Outlook account. It was not adopted because:
+
+- **Personal accounts:** `getAccessToken()` does not work on `outlook.live.com` (personal Outlook in the browser); it only works on Outlook desktop and `outlook.office365.com` (work/school).
+- **Tenant consent:** Work/school tenants often require admin consent (AADSTS500011), which adds friction for B2B deployments.
+- **Platform limits:** The add-in runs across personal and work accounts; Supabase OTP provides a consistent, reliable auth flow for all users.
 
 ## Local Development
 
